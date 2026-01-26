@@ -10,7 +10,7 @@ export const loginUser = TryCatch(async(req, res) => {
    const rateLimit = await redisClient.get(rateLimitkey);
 
    if(rateLimit){
-     res.status(429).json({message: "Too may requests. Please wait before requesting new otp"});
+     res.status(429).json({message: "Too may requests. Please wait before requesting new Otp"});
      return;
    }
 
