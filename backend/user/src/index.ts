@@ -7,16 +7,17 @@ import { connectRabbitmq } from "./config/rabbitmq.js";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
+app.use(express.json());
 
 connectDb();
 connectRabbitmq();
 
-export const redisCliend = createClient({
+export const redisClient = createClient({
   url: process.env.REDIS_URL!,
 })
 
-redisCliend.connect().then(() => console.log("connected to redis")).catch(console.error);
+redisClient.connect().then(() => console.log("connected to redis")).catch(console.error);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

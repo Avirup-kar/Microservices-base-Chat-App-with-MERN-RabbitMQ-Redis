@@ -1,4 +1,4 @@
-export declare const redisCliend: import("@redis/client").RedisClientType<{
+export declare const redisClient: import("@redis/client").RedisClientType<{
     json: {
         ARRAPPEND: {
             readonly IS_READ_ONLY: false;
