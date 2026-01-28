@@ -1,13 +1,13 @@
-import mongoose, { Document, Schema} from "mongoose";
+import mongoose, { Document, Schema, model} from "mongoose";
 
 export interface IUser extends Document {
    name: string,
    email: string
 }
 
-const schema: Schema<IUser> = new Schema({
+const schema = new Schema<IUser>({
   name: { type: String, required: true},
   email: { type: String, required: true, unique: true },
 }, {timestamps: true})
 
-export const User = mongoose.model<IUser>("User", schema)
+export const User = mongoose.models.User || model<IUser>("User", schema);

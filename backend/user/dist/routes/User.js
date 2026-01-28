@@ -1,6 +1,7 @@
 import express from "express";
-import { loginUser } from "../controllers/user.js";
+import { loginUser, verifyUser } from "../controllers/user.js";
 const userRoutes = express.Router();
 userRoutes.post("/login", loginUser);
+userRoutes.post("/verify", verifyUser);
 export default userRoutes;
 //# sourceMappingURL=user.js.map
