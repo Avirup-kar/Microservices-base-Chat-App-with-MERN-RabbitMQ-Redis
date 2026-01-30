@@ -2,11 +2,12 @@ import axios from "axios";
 import TryCatch from "../config/TryCatch.js";
 import { Chat } from "../models/Chat.js";
 import { Messages } from "../models/Message.js";
+//To craet a chat
 export const createNewChat = TryCatch(async (req, res) => {
     const userId = req.user?._id;
     const { otherUserId } = req.body;
     if (!otherUserId) {
-        res.status(400).json({
+        res.status(401).json({
             message: "Other userid is required",
         });
         return;
@@ -17,23 +18,23 @@ export const createNewChat = TryCatch(async (req, res) => {
     if (existingChat) {
         res.json({
             message: "chat already exists",
-            chatId: existingChat._id
+            chatId: existingChat._id,
         });
         return;
     }
     const newChat = await Chat.create({
-        users: [userId, otherUserId]
+        users: [userId, otherUserId],
     });
     res.status(201).json({
         message: "New chat created",
-        chatId: newChat._id
+        chatId: newChat._id,
     });
 });
 //Get all chats for user
 export const getAllChats = TryCatch(async (req, res) => {
     const userId = req.user?._id;
     if (!userId) {
-        res.status(400).json({
+        res.status(401).json({
             message: "User unauthorized",
         });
         return;
@@ -44,7 +45,7 @@ export const getAllChats = TryCatch(async (req, res) => {
         const unseenCount = await Messages.countDocuments({
             chatId: chat._id,
             sender: { $ne: userId },
-            seen: false
+            seen: false,
         });
         try {
             const { data } = await axios.get(`${process.env.USER_SERVER}/api/v1/user/${otherUserId}`);
@@ -54,7 +55,7 @@ export const getAllChats = TryCatch(async (req, res) => {
                     ...chat.toObject(),
                     latestMessage: chat.latestMessage || null,
                     unseenCount,
-                }
+                },
             };
         }
         catch (error) {
@@ -65,18 +66,64 @@ export const getAllChats = TryCatch(async (req, res) => {
                     ...chat.toObject(),
                     latestMessage: chat.latestMessage || null,
                     unseenCount,
-                }
+                },
             };
         }
     }));
     res.json({
-        chats: chatWithUserData
+        chats: chatWithUserData,
     });
 });
 //Send message to a chat
 export const sendMessage = TryCatch(async (req, res) => {
     const senderId = req.user?._id;
     const { chatId, text } = req.body;
-    // const imageFile = req.file;
+    const imageFile = req.file;
+    if (!senderId) {
+        res.status(401).json({
+            message: "User unauthorized",
+        });
+        return;
+    }
+    if (!chatId) {
+        res.status(400).json({
+            message: "chatId is required",
+        });
+        return;
+    }
+    if (!text && !imageFile) {
+        res.status(400).json({
+            message: "Either text or image is required",
+        });
+        return;
+    }
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+        res.status(404).json({
+            message: "Chat not found",
+        });
+        return;
+    }
+    const isUserInChat = chat.users.some((userId) => userId.toString() === senderId.toString());
+    if (!isUserInChat) {
+        res.status(403).json({
+            message: "You are not a participant of this chat",
+        });
+        return;
+    }
+    const otherUserId = chat.users.find((userId) => userId.toString() !== senderId.toString());
+    if (!otherUserId) {
+        res.status(403).json({
+            message: "No other user in this chat",
+        });
+        return;
+    }
+    //Socket setup
+    let messageData = {
+        chatId,
+        sender: senderId,
+        seen: false,
+        seenAt: undefined,
+    };
 });
 //# sourceMappingURL=chat.js.map
