@@ -60,10 +60,10 @@ export const verifyUser = TryCatch(async (req, res) => {
   await redisClient.del(otpKey);
 
   let user = await User.findOne({ email });
-
+  
   if(!user){
     const name = email.slice(0, 8);
-    await User.create({ name, email })
+    user = await User.create({ name, email });
   }
 
   const token = generateToken(user);

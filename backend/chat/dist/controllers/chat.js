@@ -1,5 +1,7 @@
+import axios from "axios";
 import TryCatch from "../config/TryCatch.js";
 import { Chat } from "../models/Chat.js";
+import { Messages } from "../models/Message.js";
 export const createNewChat = TryCatch(async (req, res) => {
     const userId = req.user?._id;
     const { otherUserId } = req.body;
@@ -26,5 +28,55 @@ export const createNewChat = TryCatch(async (req, res) => {
         message: "New chat created",
         chatId: newChat._id
     });
+});
+//Get all chats for user
+export const getAllChats = TryCatch(async (req, res) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        res.status(400).json({
+            message: "User unauthorized",
+        });
+        return;
+    }
+    const chats = await Chat.find({ users: userId }).sort({ updatedAt: -1 });
+    const chatWithUserData = await Promise.all(chats.map(async (chat) => {
+        const otherUserId = chat.users.find((id) => id !== userId);
+        const unseenCount = await Messages.countDocuments({
+            chatId: chat._id,
+            sender: { $ne: userId },
+            seen: false
+        });
+        try {
+            const { data } = await axios.get(`${process.env.USER_SERVER}/api/v1/user/${otherUserId}`);
+            return {
+                user: data,
+                chat: {
+                    ...chat.toObject(),
+                    latestMessage: chat.latestMessage || null,
+                    unseenCount,
+                }
+            };
+        }
+        catch (error) {
+            console.log(error);
+            return {
+                user: { _id: otherUserId, name: "Unknown User" },
+                chat: {
+                    ...chat.toObject(),
+                    latestMessage: chat.latestMessage || null,
+                    unseenCount,
+                }
+            };
+        }
+    }));
+    res.json({
+        chats: chatWithUserData
+    });
+});
+//Send message to a chat
+export const sendMessage = TryCatch(async (req, res) => {
+    const senderId = req.user?._id;
+    const { chatId, text } = req.body;
+    // const imageFile = req.file;
 });
 //# sourceMappingURL=chat.js.map
