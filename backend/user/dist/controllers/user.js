@@ -58,7 +58,7 @@ export const myProfile = TryCatch(async (req, res) => {
     res.json(user);
 });
 //update name
-export const updateNmae = TryCatch(async (req, res) => {
+export const updateName = TryCatch(async (req, res) => {
     const user = await User.findById(req.user?._id);
     if (!user) {
         res.status(400).json({ message: "Please login", });

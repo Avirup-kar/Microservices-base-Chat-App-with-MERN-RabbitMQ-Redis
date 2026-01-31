@@ -157,7 +157,7 @@ export const sendMessage = TryCatch(async (req, res) => {
 //Get messages of a chat
 export const getMessageByChat = TryCatch(async (req, res) => {
     const userId = req.user?._id;
-    const { chatId } = req.body;
+    const { chatId } = req.params;
     if (!userId) {
         res.status(401).json({
             message: "User unauthorized",
@@ -189,5 +189,36 @@ export const getMessageByChat = TryCatch(async (req, res) => {
         sender: { $ne: userId },
         seen: false,
     });
+    await Messages.updateMany({
+        chatId: chatId,
+        sender: { $ne: userId },
+        seen: false,
+    }, {
+        seen: true,
+        seenAt: new Date(),
+    });
+    const messages = await Messages.find({ chatId }).sort({ createdAt: 1 });
+    const otherUserId = chat.users.find((userID) => userID !== userId);
+    try {
+        const { data } = await axios.get(`${process.env.USER_SERVER}/api/v1/user/${otherUserId}`);
+        if (!otherUserId) {
+            res.status(404).json({
+                message: "No other user",
+            });
+            return;
+        }
+        //socket event for seen messages
+        res.json({
+            messages,
+            user: data
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.json({
+            messages,
+            user: { _id: otherUserId, name: "Unknown User" }
+        });
+    }
 });
 //# sourceMappingURL=chat.js.map
