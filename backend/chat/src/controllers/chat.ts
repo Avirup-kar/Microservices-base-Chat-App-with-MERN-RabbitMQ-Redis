@@ -93,6 +93,7 @@ export const getAllChats = TryCatch(async (req: authencatedRequest, res) => {
   });
 });
 
+
 //Send message to a chat
 export const sendMessage = TryCatch(async (req: authencatedRequest, res) => {
   const senderId = req.user?._id;
@@ -148,10 +149,130 @@ export const sendMessage = TryCatch(async (req: authencatedRequest, res) => {
  
   //Socket setup
 
+
   let messageData: any = {
     chatId,
     sender: senderId,
     seen: false,
     seenAt: undefined,
   }
+
+  if(imageFile){
+    messageData.image = {
+      url: imageFile.path,
+      publicid: imageFile.filename
+    };
+    messageData.messageType = "image";
+    messageData.text = text || "";
+  }else {
+    messageData.text = text;
+    messageData.messageType = "text";
+  }
+
+  const newMessage = new Messages(messageData);
+  const savedMessage = await newMessage.save();
+
+  //Update chat latest message
+  const latestMessagetext = imageFile ? "📷Image" : text;
+
+  await Chat.findByIdAndUpdate(chatId, {
+    latestMessage: {
+      text: latestMessagetext,
+      sender: senderId,
+    },
+    updatedAt: new Date(),
+  },{new: true})
+  
+  //emit to socket
+  
+
+  res.status(201).json({
+    messgae: savedMessage,
+    send: senderId,
+  })
 });
+
+
+//Get messages of a chat
+export const getMessageByChat = TryCatch(async (req: authencatedRequest, res) => {
+  const userId = req.user?._id;
+  const { chatId } = req.params;
+
+  if(!userId){
+    res.status(401).json({
+      message: "User unauthorized",
+    });
+    return;
+  }
+
+  if(!chatId) {
+    res.status(400).json({
+      message: "chatId is required",
+    });
+    return;
+  }
+
+  const chat = await Chat.findById(chatId);
+
+  if (!chat) {
+    res.status(404).json({
+      message: "Chat not found",
+    });
+    return;
+  }
+
+  const isUserInChat = chat.users.some((userID: any) => userID.toString() === userId.toString());
+
+  if(!isUserInChat){
+    res.status(403).json({
+      message: "You are not a participant of this chat",
+    });
+    return;
+  }
+
+  const messagesToMarkSeen = await Messages.find({
+    chatId: chatId,
+    sender: { $ne: userId },
+    seen: false,
+  })
+
+  await Messages.updateMany({
+    chatId: chatId,
+    sender: { $ne: userId },
+    seen: false,
+  },{
+    seen: true,
+    seenAt: new Date(),
+  })
+
+  const messages = await Messages.find({ chatId }).sort({ createdAt: 1 });
+
+  const otherUserId = chat.users.find((userID: any) => userID !== userId);
+
+  try {
+    const { data } = await axios.get(
+          `${process.env.USER_SERVER}/api/v1/user/${otherUserId}`,
+        );
+
+        if(!otherUserId){
+          res.status(404).json({
+            message: "No other user",
+          });
+          return;
+        }
+
+        //socket event for seen messages
+
+
+        res.json({
+          messages,
+          user: data
+        })
+  } catch (error) {
+        console.log(error);
+        res.json({
+          messages,
+          user: { _id: otherUserId, name: "Unknown User" }
+        })
+  }
+})

@@ -81,7 +81,7 @@ export const myProfile = TryCatch(async(req:AuthenticatedRequest, res) => {
 
 
 //update name
-export const updateNmae = TryCatch(async(req:AuthenticatedRequest, res) => {
+export const updateName = TryCatch(async(req:AuthenticatedRequest, res) => {
    const user = await User.findById(req.user?._id);
 
    if(!user){
@@ -100,8 +100,7 @@ export const updateNmae = TryCatch(async(req:AuthenticatedRequest, res) => {
 
 export const getAllUsers = TryCatch(async(req:AuthenticatedRequest, res) => {
    const users = await User.find();
-
-    res.json(users);
+   res.json(users);
 })
 
 export const getAUser = TryCatch(async(req, res) => {

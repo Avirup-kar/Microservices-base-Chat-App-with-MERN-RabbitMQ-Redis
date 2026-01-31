@@ -5,6 +5,6 @@ import { upload } from "../middlewares/multer.js";
 const chatRoutes = express.Router();
 chatRoutes.post("/chat/new", isAuth, createNewChat);
 chatRoutes.get("/chat/all", isAuth, getAllChats);
-chatRoutes.post("/chat/send", isAuth, upload.single("image"), sendMessage);
+chatRoutes.post("/message/send", isAuth, upload.single("image"), sendMessage);
 export default chatRoutes;
 //# sourceMappingURL=chat.js.map
