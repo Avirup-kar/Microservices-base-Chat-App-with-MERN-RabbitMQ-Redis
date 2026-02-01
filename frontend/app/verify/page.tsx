@@ -1,11 +1,17 @@
 "use client"
 import axios from 'axios';
 import { ArrowRight, Loader2Icon, Lock } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useRef, useState } from 'react'
 
 const VerifyPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [otp, setotp] = useState<string[]>(["", "", "", "", "", ""]);
+  const [error, setError] = useState<string>("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const inputRefs = useRef<Array<HTMLInputElement> | null>([]);
+  const router = useRouter();
 
   const searchparams = useSearchParams();
   const email: string | null = searchparams.get("email");
