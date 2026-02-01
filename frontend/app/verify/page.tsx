@@ -10,7 +10,7 @@ const VerifyPage = () => {
   const [error, setError] = useState<string>("");
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
-  const inputRefs = useRef<Array<HTMLInputElement>>([]);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
 
   const searchparams = useSearchParams();
@@ -52,10 +52,21 @@ const VerifyPage = () => {
    }
   }
 
-  const handelkeyDown = (index: number, e: React.FormEvent<HTMLElement>): void => {
-    if (e.key === 'Backspace' && index > 0 && otp[index] === "") {
-      inputRefs.current[index - 1].focus();
+  const handelkeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Backspace' && index > 0 && !otp[index]) {
+      inputRefs.current[index - 1]?.focus();
     }
+  }
+
+  const handelpaste = (e: React.ClipboardEvent<HTMLInputElement>): void => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('Text');
+    const digits = pastedData.replace(/\D/g, "").slice(0, 6);
+    if(digits.length===6){
+    const newOtp = digits.split("")
+    setotp(newOtp)
+    inputRefs.current[5]?.focus();
+  }
   }
   
   return (
@@ -75,12 +86,17 @@ const VerifyPage = () => {
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-                <input type="email" id="email" 
-                // value={email} 
-                // onChange={(e) => setEmail(e.target.value)}
-                required 
-                className="w-full px-4 py-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400" placeholder="Enter Your email" />
+                <label className="block text-sm font-medium text-gray-300 mb-4">Enter your 6 digit Otp here</label>
+                <div>
+                  {
+                  otp.map((digit, index) => (
+                    <input key={index} type="text" 
+                    ref={(el: HTMLInputElement | null) => {inputRefs.current[index] = el}}
+
+                    />
+                  ))
+                  }
+                </div>
             </div>
             <button type="submit" disabled={loading} className="w-full bg-blue-600 cursor-pointer text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? <div className="flex justify-center items-center gap-2">
