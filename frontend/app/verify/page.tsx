@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { ArrowRight, Loader2Icon, Lock } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const VerifyPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -10,7 +10,7 @@ const VerifyPage = () => {
   const [error, setError] = useState<string>("");
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
-  const inputRefs = useRef<Array<HTMLInputElement> | null>([]);
+  const inputRefs = useRef<Array<HTMLInputElement>>([]);
   const router = useRouter();
 
   const searchparams = useSearchParams();
@@ -29,6 +29,35 @@ const VerifyPage = () => {
         setLoading(false)
        }
   }
+
+  useEffect(() => {
+    if(timer > 0){
+      const interval = setInterval(() => {
+        setTimer((prv) => prv -1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timer])
+
+
+    const handelInputChange = (index: number, value: string) => {
+   if(value.length > 1) return;
+   const newotp = [...otp];
+   newotp[index] = value;
+   setotp(newotp);
+   setError("");
+
+   if(value && index < 5){
+    inputRefs.current[index + 1]?.focus();
+   }
+  }
+
+  const handelkeyDown = (index: number, e: React.FormEvent<HTMLElement>): void => {
+    if (e.key === 'Backspace' && index > 0 && otp[index] === "") {
+      inputRefs.current[index - 1].focus();
+    }
+  }
+  
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
