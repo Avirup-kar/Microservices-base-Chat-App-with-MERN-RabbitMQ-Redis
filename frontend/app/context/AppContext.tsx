@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
 export const user_service = "http://localhost:5000";
 export const chat_service = "http://localhost:5002";
@@ -43,6 +43,8 @@ interface AppProviderProps {
  children: React.ReactNode;
 }
 
-export const AppProvider = React.FC<AppProviderProps> = ({ Children }) => {
-
+export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
+   const [user, setUser] = useState<User | null>(null);
+   const [isAuth, setIsAuth] = useState(false);
+   const [loading, setLoading] = useState(true);
 }
