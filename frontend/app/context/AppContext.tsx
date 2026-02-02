@@ -8,3 +8,29 @@ export interface User {
  name: string;
  email: string;
 }
+
+export interface Chat{
+ _id: string;
+ users: string[];
+ latestMessage: {
+   text: string;
+   sender: string;
+ };
+ createdAt: string;
+ updatedAt: string;
+ unseenCount?: number;
+}
+
+export interface Chats{
+ _id: string;
+ user: User;
+ chat: Chat;
+}
+
+export interface AppContextType {
+ user: User | null;
+ loading: boolean;
+ isAuth: boolean;
+ setUser: React.Dispatch<React.SetStateAction<User | null>>;
+ setAuth: React.Dispatch<React.SetStateAction<boolean>>;
+}
