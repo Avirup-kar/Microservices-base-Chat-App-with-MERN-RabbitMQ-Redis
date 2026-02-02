@@ -16,8 +16,16 @@ const VerifyPage = () => {
   const searchparams = useSearchParams();
   const email: string | null = searchparams.get("email");
 
-  const handleSubmit = async(e: React.FormEvent<HTMLElement>): Promise<void> => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>): Promise<void> => {
        e.preventDefault();
+       const enteredOtp = otp.join("");
+        if(enteredOtp.length !== 6){
+          setError("Please enter a valid 6-digit code");
+          setLoading(false);
+          return;
+        }
+        
+       setError("");
        setLoading(true);
 
        try {
@@ -40,7 +48,7 @@ const VerifyPage = () => {
   }, [timer])
 
 
-    const handelInputChange = (index: number, value: string) => {
+  const handelInputChange = (index: number, value: string) => {
    if(value.length > 1) return;
    const newotp = [...otp];
    newotp[index] = value;
@@ -87,17 +95,25 @@ const VerifyPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-4">Enter your 6 digit Otp here</label>
-                <div>
+                <div className='flex justify-between mb-5'>
                   {
                   otp.map((digit, index) => (
-                    <input key={index} type="text" 
+                    <input key={index}
+                    type="text" 
+                    className='w-14 h-14 bg-[#333A5C] text-white text-center text-xl rounded-md placeholder:text-2xl'
                     ref={(el: HTMLInputElement | null) => {inputRefs.current[index] = el}}
-
+                    value={digit}
+                    onChange={(e) => handelInputChange(index, e.target.value)}
+                    onKeyDown={(e) => handelkeyDown(index, e)}
+                    onPaste={index === 0? handelpaste: undefined}
                     />
                   ))
                   }
                 </div>
             </div>
+            {error && (<div className="bg-red-900 border border-red-700 rounded-lg p-3">
+                 <p className="text-red-300 text-sm text-center">{error}</p>
+            </div>)}
             <button type="submit" disabled={loading} className="w-full bg-blue-600 cursor-pointer text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? <div className="flex justify-center items-center gap-2">
                     <span>Verifying...</span> 
@@ -108,6 +124,14 @@ const VerifyPage = () => {
                 </div>}
             </button>
           </form>
+          <div className="mt-6 text-center">
+             <p className="text-gray-400 text-sm mb-4">Didn&apos;t receive the code?</p>
+              {
+              timer > 0 ? <p className="text-gray-400 text-sm">Resend code in {timer} seconds</p> 
+              :
+              <button disabled={resendLoading} className='text-blue-400 hover:text-blue-300 font-medium text-sm disabled: opacity-50'>{resendLoading? "Sending..." : "Resend Code"}</button>
+              }
+         </div>
         </div>
       </div>
     </div>
