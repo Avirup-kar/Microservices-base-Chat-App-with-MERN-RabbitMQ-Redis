@@ -1,9 +1,10 @@
 "use client"
 import axios from 'axios';
-import { ArrowRight, Loader2Icon, Lock } from 'lucide-react';
+import { ArrowRight, ChevronLeft, Loader2Icon, Lock } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
 import Cookies from 'js-cookie';
+import { user_service } from '../context/AppContext';
 
 const VerifyPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,13 +31,15 @@ const VerifyPage = () => {
        setLoading(true);
 
        try {
-        const {data} = await axios.post("http://localhost:5000/api/v1/verify", {email, otp: enteredOtp});
+        const {data} = await axios.post(`${user_service}/api/v1/verify`, {email, otp: enteredOtp});
         alert(data.message);
         Cookies.set("token", data.token, {
           expires: 15,
           secure: false,
-          path: "/"
+          path: "/",
         });
+        setotp(["", "", "", "", "", ""])
+        inputRefs.current[0]?.focus();
         router.push("/")
        } catch (error: any) {
         alert(error.response.data.message)
@@ -44,6 +47,21 @@ const VerifyPage = () => {
         setLoading(false)
        }
   }
+
+  const hadleResend = async(e: React.FormEvent<HTMLElement>): Promise<void> => {
+       e.preventDefault();
+       setResendLoading(true);
+       setError("");
+
+       try {
+        const { data } = await axios.post(`${user_service}/api/v1/login`, {email});
+        router.push(`/verify?email=${email}`);
+        alert(data.message);
+       } catch (error: any) {
+        alert(error.response.data.message)
+       }finally{
+        setResendLoading(false)
+       }}
 
   useEffect(() => {
     if(timer > 0){
@@ -88,7 +106,8 @@ const VerifyPage = () => {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 relative">
+            <button onClick={() => router.push("/login")} className='cursor-pointer hover:bg-blue-600 rounded-full absolute top-0 left-0 p-2 text-gray-300 hover:text-white'><ChevronLeft className='w-6 h-6' /></button>
             <div className="mx-auto w-17 h-17 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
               <Lock size={40} className="text-white" />
             </div>
@@ -107,7 +126,7 @@ const VerifyPage = () => {
                   otp.map((digit, index) => (
                     <input key={index}
                     type="text" 
-                    className='w-14 h-14 bg-[#333A5C] text-white text-center text-xl rounded-md placeholder:text-2xl'
+                    className='w-14 h-14 bg-[#333A5C] text-white text-center text-2xl rounded-md placeholder:text-2xl'
                     ref={(el: HTMLInputElement | null) => {inputRefs.current[index] = el}}
                     value={digit}
                     onChange={(e) => handelInputChange(index, e.target.value)}
@@ -136,7 +155,7 @@ const VerifyPage = () => {
               {
               timer > 0 ? <p className="text-gray-400 text-sm">Resend code in {timer} seconds</p> 
               :
-              <button disabled={resendLoading} className='text-blue-400 hover:text-blue-300 font-medium text-sm disabled: opacity-50'>{resendLoading? "Sending..." : "Resend Code"}</button>
+              <button onClick={hadleResend} disabled={resendLoading} className='text-blue-400 hover:text-blue-300 font-medium text-sm disabled: opacity-50'>{resendLoading? "Sending..." : "Resend Code"}</button>
               }
          </div>
         </div>
