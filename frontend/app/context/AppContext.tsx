@@ -1,5 +1,7 @@
 "use client"
 
+import { createContext } from "react";
+
 export const user_service = "http://localhost:5000";
 export const chat_service = "http://localhost:5002";
 
@@ -27,10 +29,20 @@ export interface Chats{
  chat: Chat;
 }
 
-export interface AppContextType {
+interface AppContextType {
  user: User | null;
  loading: boolean;
  isAuth: boolean;
  setUser: React.Dispatch<React.SetStateAction<User | null>>;
- setAuth: React.Dispatch<React.SetStateAction<boolean>>;
+ setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined)
+
+interface AppProviderProps {
+ children: React.ReactNode;
+}
+
+export const AppProvider = React.FC<AppProviderProps> = ({ Children }) => {
+
 }
