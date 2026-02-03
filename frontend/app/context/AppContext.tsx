@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -50,15 +50,30 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  async function fetchUser() {
-    try {
-      const token = Cookies.get("token");
-      const { data } = await axios.get(`${user_service}/api/v1/me`);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  }
+  
+
+  useEffect(() => {
+   async function fetchUser() {
+     try {
+       const token = Cookies.get("token");
+       const { data } = await axios.get(`${user_service}/api/v1/me`, {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         }
+       });
+
+       setUser(data.user);
+       setIsAuth(true);
+       setLoading(false);
+     } catch (error) {
+       console.log(error);
+       setLoading(false);
+     }
+   }
+
+   fetchUser();
+  }, [])
+  
 
   return (
     <AppContext.Provider value={{ user, setUser, isAuth, setIsAuth, loading }}>

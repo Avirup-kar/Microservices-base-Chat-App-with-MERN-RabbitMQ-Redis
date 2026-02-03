@@ -40,7 +40,6 @@ const VerifyPage = () => {
         });
         setotp(["", "", "", "", "", ""])
         inputRefs.current[0]?.focus();
-        router.push("/")
        } catch (error: any) {
         alert(error.response.data.message)
        }finally{
