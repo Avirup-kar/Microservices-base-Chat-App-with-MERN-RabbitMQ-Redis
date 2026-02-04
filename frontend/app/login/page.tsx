@@ -2,14 +2,17 @@
 import axios from "axios";
 import { ArrowRight, Loader2Icon, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { user_service } from "../context/AppContext";
+import React, { useEffect, useState } from "react";
+import { useAppData, user_service } from "../context/AppContext";
+import Loading from "../components/Loading";
 
 const LoginPage = () => {
 
     const [email, setEmail] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
+
+    const {isAuth, loading: userLoading} = useAppData();
 
     const handleSubmit = async(e: React.FormEvent<HTMLElement>): Promise<void> => {
        e.preventDefault();
@@ -25,6 +28,13 @@ const LoginPage = () => {
        }
     }
 
+  useEffect(() => {
+    if (isAuth) {
+      router.push("/chat");
+    }
+  }, [isAuth, router]);
+  
+  if(userLoading) return <Loading />;
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
