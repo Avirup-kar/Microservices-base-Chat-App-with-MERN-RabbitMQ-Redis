@@ -4,12 +4,14 @@ import connectDb from "./config/db.js";
 import chatRoutes from "./routes/chat.js";
 import cors from "cors";
 
-app.use(cors())
 dotenv.config();
-connectDb();
 const app = express();
+
 const port = process.env.PORT || 5002;
+
 app.use(express.json());
+app.use(cors())
+connectDb();
 
 app.use("/api/v1", chatRoutes);
 
