@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useAppData, user_service } from "../context/AppContext";
 import Loading from "../components/Loading";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
 
@@ -22,7 +23,7 @@ const LoginPage = () => {
         const data = await axios.post(`${user_service}/api/v1/login`, {email});
         router.push(`/verify?email=${email}`);
        } catch (error: any) {
-        alert(error.response.data.message)
+        toast.error(error.response.data.message)
        }finally{
         setLoading(false)
        }

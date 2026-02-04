@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Cookies from 'js-cookie';
 import { useAppData, user_service } from '../context/AppContext';
 import Loading from './Loading';
+import toast from 'react-hot-toast';
 
 const VerifyOtp = () => {
   const {isAuth, setIsAuth, setUser, loading: userLoading} = useAppData();
@@ -34,7 +35,7 @@ const VerifyOtp = () => {
 
        try {
         const {data} = await axios.post(`${user_service}/api/v1/verify`, {email, otp: enteredOtp});
-        alert(data.message);
+        toast.success(data.message);
         Cookies.set("token", data.token, {
           expires: 15,
           secure: false,
@@ -45,7 +46,7 @@ const VerifyOtp = () => {
         setUser(data.user);
         setIsAuth(true);
        } catch (error: any) {
-        alert(error.response.data.message)
+        toast.error(error.response.data.message)
        }finally{
         setLoading(false)
        }
@@ -59,9 +60,9 @@ const VerifyOtp = () => {
        try {
         const { data } = await axios.post(`${user_service}/api/v1/login`, {email});
         router.push(`/verify?email=${email}`);
-        alert(data.message);
+        toast.success(data.message);
        } catch (error: any) {
-        alert(error.response.data.message)
+        toast.error(error.response.data.message)
        }finally{
         setResendLoading(false)
        }}
