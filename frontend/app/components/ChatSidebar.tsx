@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Chats, User } from "../context/AppContext";
-import { MessageCircle, Plus, X } from "lucide-react";
+import { MessageCircle, Plus, Search, X } from "lucide-react";
 
 interface chatSidebarProps {
   siderbarOpen: boolean;
@@ -57,7 +57,14 @@ const ChatSidebar = ({
 
       {/* content */}
 
-      
+      <div className="flex-1 overflow-hidden px-4 py-2">
+         {showAllUser ? <div className="space-y-4 h-full">
+           <div className="relative">
+             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"/>
+             <input type="text" />
+           </div>
+         </div> : <div></div>}
+      </div>
     </aside>
   );
 };
