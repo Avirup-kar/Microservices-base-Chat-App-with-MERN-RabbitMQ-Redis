@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useAppData, User } from '../context/AppContext'
 import { useRouter } from 'next/navigation';
 import Loading from '../components/Loading';
+import ChatSidebar from '../components/ChatSidebar';
 
 export interface Message{
   _id: string
@@ -26,7 +27,7 @@ const ChatPage = () => {
 
   const [selecteduser, setSelecteduser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
-  const [siderbarOpen, setSiderbarOpen] = useState (false);hghgggrgrg
+  const [siderbarOpen, setSiderbarOpen] = useState (false);
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [user, setUser] = useState<User | null> (null);
   const [showAllUser, setShowAllUser] = useState(false);
@@ -37,12 +38,14 @@ const ChatPage = () => {
     if(!isAuth && !loading){
       router.push("/login");
     }
-  }, [isAuth, loading, router])
+  }, [isAuth, loading, router]);
+
+ const handleLogout = () => logoutUser();
   
   if(loading) return <Loading />
   return (
-    <div>
-      chatApp
+    <div className="min-h-screen flex bg-gray-900 text-white relative overflow-hidden">
+      <ChatSidebar siderbarOpen={siderbarOpen} setSiderbarOpen={setSiderbarOpen} showAllUser={showAllUser} setShowAllUser={setShowAllUser} users={users} loggedInuser={loggedInUser} chats={chats} selecteduser={selecteduser} setSelecteduser={setSelecteduser} handleLogout={handleLogout} />
     </div>
   )
 }
