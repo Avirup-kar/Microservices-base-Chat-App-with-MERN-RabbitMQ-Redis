@@ -79,21 +79,24 @@ const ChatSidebar = ({
                        </div>
 
                        {/* Online symbol dikhana hain */}
-                     </div>
-
-                     <div className="flex-1 min-w-0">
-                       <span className="font-medium text-white">{user.name}</span>
-                       <div className="text-xs text-gray-400 mt-0.5">
+                       <div className="flex-1 min-w-0">
+                         <span className="font-medium text-white">{user.name}</span>
+                         <div className="text-xs text-gray-400 mt-0.5">
                            {/* to show online offline text */}
+                         </div>
                        </div>
                      </div>
                 </button>
               ))
             }
            </div>
-         </div> : <div>
-            
-          </div>}
+         </div> : chats && chats.length > 0 ? (
+          <div className="space-y-2 overflow-y-auto h-full pb-4">
+                
+          </div>
+           ) : (
+           <div></div>
+          )}
       </div>
     </aside>
   );
