@@ -61,9 +61,23 @@ const ChatSidebar = ({
          {showAllUser ? <div className="space-y-4 h-full">
            <div className="relative">
              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"/>
-             <input type="text" />
+             <input type="text" 
+             value={searchQuery} 
+             placeholder="Search Users..." 
+             onChange={(e) => setSearchQuery(e.target.value)}
+             className="w-full pl-10 pr-4 py-3 bg-gray-800 rounded-lg border border-gray-700 text-white placeholder-gray-400" />
            </div>
-         </div> : <div></div>}
+
+           {/* User list */}
+
+           <div className="space-y-2 overflow-y-auto h-full pb-4">
+            {
+              users?.filter
+            }
+           </div>
+         </div> : <div>
+            
+          </div>}
       </div>
     </aside>
   );
