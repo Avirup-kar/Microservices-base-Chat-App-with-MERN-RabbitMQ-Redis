@@ -24,7 +24,6 @@ export interface Message{
 const ChatPage = () => {
   const {isAuth, loading, logoutUser, chats, user: loggedInUser, users, fetchChats, setChats} = useAppData();
   const router = useRouter();
-
   const [selecteduser, setSelecteduser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [siderbarOpen, setSiderbarOpen] = useState (false);
@@ -45,7 +44,7 @@ const ChatPage = () => {
   if(loading) return <Loading />
   return (
     <div className="min-h-screen flex bg-gray-900 text-white relative overflow-hidden">
-      <ChatSidebar siderbarOpen={siderbarOpen} setSiderbarOpen={setSiderbarOpen} showAllUser={showAllUser} setShowAllUser={setShowAllUser} users={users} loggedInuser={loggedInUser} chats={chats} selecteduser={selecteduser} setSelecteduser={setSelecteduser} handleLogout={handleLogout} />
+      <ChatSidebar siderbarOpen={siderbarOpen} setSiderbarOpen={setSiderbarOpen} showAllUser={showAllUser} setShowAllUser={setShowAllUser} users={users} loggedInUser={loggedInUser} chats={chats} selecteduser={selecteduser} setSelecteduser={setSelecteduser} handleLogout={handleLogout} />
     </div>
   )
 }

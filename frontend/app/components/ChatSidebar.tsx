@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Chats, User } from "../context/AppContext";
-import { MessageCircle, Plus, Search, X } from "lucide-react";
+import { MessageCircle, Plus, Search, UserCircle, X } from "lucide-react";
 
 interface chatSidebarProps {
   siderbarOpen: boolean;
@@ -8,7 +8,7 @@ interface chatSidebarProps {
   showAllUser: boolean;
   setShowAllUser: (show: boolean) => void;
   users: User[] | null;
-  loggedInuser: User | null;
+  loggedInUser: User | null;
   chats: Chats[] | null;
   selecteduser: string | null;
   setSelecteduser: (userId: string | null) => void;
@@ -21,14 +21,13 @@ const ChatSidebar = ({
   showAllUser,
   setShowAllUser,
   users,
-  loggedInuser,
+  loggedInUser,
   chats,
   selecteduser,
   setSelecteduser,
   handleLogout,
 }: chatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-
   return (
     <aside className={`fixed z-20 sm:static top-0 left-0 h-screen w-80 bg-gray-900 border-r border-gray-700 transform ${siderbarOpen ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0 transition-transform duration-300 flex flex-col`}>
       {/* header */}
@@ -72,7 +71,24 @@ const ChatSidebar = ({
 
            <div className="space-y-2 overflow-y-auto h-full pb-4">
             {
-              users?.filter
+              users?.filter((u) => u._id !== loggedInUser?._id && u.name.toLowerCase().includes(searchQuery.toLowerCase())).map((user, index) => (
+                <button key={user._id} className="w-full text-left p-4 rounded-lg border border-gray-700 hover:border-gray-600 hover:bg-gray-800 transition-colors">
+                     <div className="flex items-center gap-3">
+                       <div className="relative">
+                         <UserCircle className="w-6 h-6 text-gray-300" />
+                       </div>
+
+                       {/* Online symbol dikhana hain */}
+                     </div>
+
+                     <div className="flex-1 min-w-0">
+                       <span className="font-medium text-white">{user.name}</span>
+                       <div className="text-xs text-gray-400 mt-0.5">
+                           {/* to show online offline text */}
+                       </div>
+                     </div>
+                </button>
+              ))
             }
            </div>
          </div> : <div>

@@ -70,7 +70,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
          }
        });
 
-       setUser(data.user);
+       setUser(data);
        setIsAuth(true);
        setLoading(false);
      } catch (error) {
@@ -101,7 +101,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           Authorization: `Bearer ${token}`
         }
       })
-      setUsers(data.users);
+      setUsers(data);
     } catch (error) {
       console.log(error);
     }
