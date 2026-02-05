@@ -91,11 +91,16 @@ const ChatSidebar = ({
             }
            </div>
          </div> : chats && chats.length > 0 ? (
-          <div className="space-y-2 overflow-y-auto h-full pb-4">
-                
-          </div>
+            <div className="space-y-2 overflow-y-auto h-full pb-4">
+               {
+                chats.map((chat) => {
+                  const latestMessage = chat.chat.latestMessage;
+                  
+                })
+               }  
+            </div>
            ) : (
-           <div></div>
+            <div></div>
           )}
       </div>
     </aside>
