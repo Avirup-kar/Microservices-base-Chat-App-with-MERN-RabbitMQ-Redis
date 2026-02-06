@@ -44,7 +44,21 @@ const ChatPage = () => {
   if(loading) return <Loading />
   return (
     <div className="min-h-screen flex bg-gray-900 text-white relative overflow-hidden">
-      <ChatSidebar siderbarOpen={siderbarOpen} setSiderbarOpen={setSiderbarOpen} showAllUser={showAllUser} setShowAllUser={setShowAllUser} users={users} loggedInUser={loggedInUser} chats={chats} selecteduser={selecteduser} setSelecteduser={setSelecteduser} handleLogout={handleLogout} />
+      <ChatSidebar 
+      siderbarOpen={siderbarOpen} 
+      setSiderbarOpen={setSiderbarOpen} 
+      showAllUser={showAllUser} 
+      setShowAllUser={setShowAllUser} 
+      users={users} 
+      loggedInUser={loggedInUser} 
+      chats={chats} 
+      selecteduser={selecteduser} 
+      setSelecteduser={setSelecteduser} 
+      handleLogout={handleLogout} />
+
+      <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
+       
+      </div>
     </div>
   )
 }
