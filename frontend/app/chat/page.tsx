@@ -40,6 +40,10 @@ const ChatPage = () => {
   }, [isAuth, loading, router]);
 
  const handleLogout = () => logoutUser();
+
+ async function creatChat(userId: string){
+  
+ }
   
   if(loading) return <Loading />
   return (
