@@ -12,8 +12,9 @@ interface chatSidebarProps {
   loggedInUser: User | null;
   chats: Chats[] | null;
   selecteduser: string | null;
-  setSelecteduser: (userId: string | null) => void;
+  setSelecteduser: (chatId: string | null) => void;
   handleLogout: () => void;
+  creatChat: (user: User) => void;
 }
 
 const ChatSidebar = ({
@@ -27,6 +28,7 @@ const ChatSidebar = ({
   selecteduser,
   setSelecteduser,
   handleLogout,
+  creatChat
 }: chatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   return (
@@ -73,7 +75,7 @@ const ChatSidebar = ({
            <div className="space-y-2 overflow-y-auto h-full pb-4">
             {
               users?.filter((u) => u._id !== loggedInUser?._id && u.name.toLowerCase().includes(searchQuery.toLowerCase())).map((user) => (
-                <button key={user._id} className="w-full text-left p-4 rounded-lg border border-gray-700 hover:border-gray-600 hover:bg-gray-800 transition-colors">
+                <button key={user._id} onClick={() => creatChat(user)} className="w-full text-left p-4 rounded-lg border border-gray-700 hover:border-gray-600 hover:bg-gray-800 transition-colors">
                      <div className="flex items-center gap-3">
                        <div className="relative">
                          <UserCircle className="w-6 h-6 text-gray-300" />

@@ -1,9 +1,12 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { useAppData, User } from '../context/AppContext'
+import { chat_service, useAppData, User } from '../context/AppContext'
 import { useRouter } from 'next/navigation';
 import Loading from '../components/Loading';
 import ChatSidebar from '../components/ChatSidebar';
+import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export interface Message{
   _id: string
@@ -41,8 +44,22 @@ const ChatPage = () => {
 
  const handleLogout = () => logoutUser();
 
- async function creatChat(userId: string){
-  
+ async function creatChat(u: User){
+   try {
+    const token = Cookies.get("token");
+    const {data} = await axios.post(`${chat_service}/api/v1/chat/new`, {
+      otherUserId: u._id
+    },{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    setSelecteduser(data.chatId);
+    setShowAllUser(false);
+    await fetchChats();
+   } catch (error) {
+    toast.error("Failed to create chat");
+   }
  }
   
   if(loading) return <Loading />
@@ -58,7 +75,8 @@ const ChatPage = () => {
       chats={chats} 
       selecteduser={selecteduser} 
       setSelecteduser={setSelecteduser} 
-      handleLogout={handleLogout} />
+      handleLogout={handleLogout}
+      creatChat={creatChat} />
 
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
        
