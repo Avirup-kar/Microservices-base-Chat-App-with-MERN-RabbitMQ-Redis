@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Chats, User } from "../context/AppContext";
-import { CornerDownRight, CornerUpLeft, CornerUpRight, LogOut, MessageCircle, Plus, Search, UserCircle, X } from "lucide-react";
+import { CornerDownRight, CornerUpLeft, LogOut, MessageCircle, Plus, Search, UserCircle, X } from "lucide-react";
 import Link from "next/link";
 
 interface chatSidebarProps {
