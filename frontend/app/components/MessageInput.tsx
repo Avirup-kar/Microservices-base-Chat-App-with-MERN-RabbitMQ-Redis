@@ -1,11 +1,19 @@
-import React from 'react'
+import React from "react";
 
-const MessageInput = () => {
-  return (
-    <div>
-      hiii
-    </div>
-  )
+interface messageInputProps {
+  selecteduser: string | null;
+  handleMessageSend: (e: any, imageFile?: File | null) => void;
+  message: string;
+  setMessage: (message: string) => void;
 }
 
-export default MessageInput
+const MessageInput = ({
+  selecteduser,
+  handleMessageSend,
+  message,
+  setMessage,
+}: messageInputProps) => {
+  return <div>hiii</div>;
+};
+
+export default MessageInput;
