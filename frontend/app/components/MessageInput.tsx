@@ -13,6 +13,9 @@ const MessageInput = ({
   message,
   setMessage,
 }: messageInputProps) => {
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  
   return <div>hiii</div>;
 };
 
