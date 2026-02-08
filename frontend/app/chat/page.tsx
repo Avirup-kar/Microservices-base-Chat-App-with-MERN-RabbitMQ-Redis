@@ -67,7 +67,7 @@ const ChatPage = () => {
  }
 
  //send message
- const handleSendMessage = async (e: any, imageFile: File | null) => {
+ const handleMessageSend = async (e: any, imageFile: File | null) => {
    e.preventDefault()
    if(!message.trim() && !imageFile) return;
    if(!selecteduser) return
@@ -161,7 +161,7 @@ const ChatPage = () => {
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
         <ChatHeader user={user} setSidebarOpen={setSiderbarOpen} isTyping={isTyping}/>
         <ChatMessages selectedUser={selecteduser} messages={messages} loggedInUser={loggedInUser} />
-        <MessageInput selecteduser={selecteduser} handleSendMessage={handleSendMessage} message={message} setMessage={habdleTypeing}/>
+        <MessageInput selecteduser={selecteduser} handleMessageSend={handleMessageSend} message={message} setMessage={habdleTypeing}/>
       </div>
 
     </div>
