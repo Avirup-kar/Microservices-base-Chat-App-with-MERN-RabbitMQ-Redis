@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import ChatHeader from '../components/ChatHeader';
 import ChatMessages from '../components/ChatMessages';
+import MessageInput from '../components/MessageInput';
 
 export interface Message{
   _id: string
@@ -64,6 +65,59 @@ const ChatPage = () => {
     toast.error("Failed to create chat");
    }
  }
+
+ //send message
+ const handleSendMessage = async (e: any, imageFile: File | null) => {
+   e.preventDefault()
+   if(!message.trim() && !imageFile) return;
+   if(!selecteduser) return
+
+   //Socket work
+
+   const token = Cookies.get("token")
+   try {
+    const formData = new FormData();
+
+    formData.append("chatId", selecteduser);
+    if(message.trim()){
+      formData.append("text", message);
+    } 
+    if(imageFile){
+      formData.append("image", imageFile);
+    }
+
+    const {data} = await axios.post(`${chat_service}/api/v1/message`, formData, {
+       headers: {
+        Authorization: `Bearer ${token}`
+       }
+    });
+
+    setMessages((prev) => {
+      const currentMessages = prev || [];
+      const messageExists = currentMessages.some((msg) => msg._id === data.message._id);
+      if(!messageExists){
+        return [...currentMessages, data.message]
+      }
+      return currentMessages;
+    });
+
+    setMessage("")
+    const displayText = imageFile ? "📷image": message;
+
+   } catch (error:  any) {
+    toast.error(error.response.data.message);
+    toast.error("Failed to send Message");
+   }
+  }
+ 
+
+ const habdleTypeing = (value: string) => {
+    setMessage(value);
+    if(!selecteduser) return
+
+    //socket setup
+ }
+ 
   
  useEffect(() => {
    if(selecteduser){
@@ -107,7 +161,9 @@ const ChatPage = () => {
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
         <ChatHeader user={user} setSidebarOpen={setSiderbarOpen} isTyping={isTyping}/>
         <ChatMessages selectedUser={selecteduser} messages={messages} loggedInUser={loggedInUser} />
+        <MessageInput selecteduser={selecteduser} handleSendMessage={handleSendMessage} message={message} setMessage={habdleTypeing}/>
       </div>
+
     </div>
   )
 }

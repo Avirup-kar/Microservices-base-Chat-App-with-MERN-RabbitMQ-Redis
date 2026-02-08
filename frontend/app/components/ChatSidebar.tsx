@@ -81,7 +81,7 @@ const ChatSidebar = ({
                          <UserCircle className="w-6 h-6 text-gray-300" />
                        </div>
 
-                       {/* Online symbol dikhana hain */}
+                       {/*To show Online symbol*/}
                        <div className="flex-1 min-w-0">
                          <span className="font-medium text-white">{user.name}</span>
                          <div className="text-xs text-gray-400 mt-0.5">
