@@ -24,7 +24,13 @@ const MessageInput = ({
     setImageFile(null);
     setIsUploading(false);
   };
-  return <div>hiii</div>;
+
+  if (!selecteduser) return null;
+  return (
+    <form action="">
+      
+    </form>
+  );
 };
 
 export default MessageInput;
