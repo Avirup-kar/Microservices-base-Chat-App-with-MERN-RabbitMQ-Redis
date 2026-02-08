@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface messageInputProps {
   selecteduser: string | null;
@@ -13,9 +13,17 @@ const MessageInput = ({
   message,
   setMessage,
 }: messageInputProps) => {
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!message.trim() && !imageFile) return;
+    setIsUploading(true);
+    await handleMessageSend(e, imageFile);
+    setImageFile(null);
+    setIsUploading(false);
+  };
   return <div>hiii</div>;
 };
 
