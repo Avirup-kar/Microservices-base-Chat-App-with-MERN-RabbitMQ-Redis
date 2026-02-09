@@ -65,7 +65,7 @@ const ChatMessages = ({
                                 
                             </div>
 
-                            <div className={`flex items-center justify-center gap-2 text-xs text-gray-400 ${isSentByMe ? "pr-2 flex-row-reverse": "pl-2"}`}>
+                            <div className={`flex items-center justify-center gap-2 text-xs text-gray-400 ${isSentByMe ? "flex-row-reverse": ""}`}>
                                 <span>{moment(e.createdAt).format("hh:mm A . MMM D")}</span>
                                 {
                                    isSentByMe && <div className="flex items-center ml-1">

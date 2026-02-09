@@ -187,7 +187,7 @@ export const sendMessage = TryCatch(async (req: authencatedRequest, res) => {
   
 
   res.status(201).json({
-    messgae: savedMessage,
+    message: savedMessage,
     send: senderId,
   })
 });

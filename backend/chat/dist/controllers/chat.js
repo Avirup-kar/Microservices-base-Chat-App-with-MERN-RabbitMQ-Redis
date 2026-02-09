@@ -150,7 +150,7 @@ export const sendMessage = TryCatch(async (req, res) => {
     }, { new: true });
     //emit to socket
     res.status(201).json({
-        messgae: savedMessage,
+        message: savedMessage,
         send: senderId,
     });
 });

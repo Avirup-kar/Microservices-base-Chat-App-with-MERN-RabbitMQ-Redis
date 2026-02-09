@@ -86,7 +86,7 @@ const ChatPage = () => {
       formData.append("image", imageFile);
     }
 
-    const {data} = await axios.post(`${chat_service}/api/v1/message`, formData, {
+    const {data} = await axios.post(`${chat_service}/api/v1/message/send`, formData, {
        headers: {
         Authorization: `Bearer ${token}`
        }
@@ -158,7 +158,7 @@ const ChatPage = () => {
       handleLogout={handleLogout}
       creatChat={creatChat} />
 
-      <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
+      <div className="flex-1 relative flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
         <ChatHeader user={user} setSidebarOpen={setSiderbarOpen} isTyping={isTyping}/>
         <ChatMessages selectedUser={selecteduser} messages={messages} loggedInUser={loggedInUser} />
         <MessageInput selecteduser={selecteduser} handleMessageSend={handleMessageSend} message={message} setMessage={habdleTypeing}/>
