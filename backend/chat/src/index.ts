@@ -3,15 +3,10 @@ import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import chatRoutes from "./routes/chat.js";
 import cors from "cors";
-import { app, Server, server } from "./config/socket.js";
+import { app, io, server } from "./config/socket.js";
 dotenv.config();
 
 const port = process.env.PORT || 5002;
-
-//Initialize socket.io server
-export const io = new Server(server, {
-  cors: {origin: "*"}
-})
 
 
 

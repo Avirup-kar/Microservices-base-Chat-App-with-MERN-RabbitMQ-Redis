@@ -5,7 +5,7 @@ dotenv.config();
 let channel = null;
 export const startSendOtpConsumer = async () => {
     try {
-        const connection = await amqp.connect("amqp://localhost:5672");
+        const connection = await amqp.connect(process.env.RABITMQ_URL || "");
         channel = await connection.createChannel();
         const queueName = 'send-otp';
         await channel.assertQueue(queueName, { durable: true });
