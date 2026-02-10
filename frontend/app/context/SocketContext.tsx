@@ -1,26 +1,54 @@
 "use client"
-import { createContext } from "react";
-import { Socket } from "socket.io-client"
+import { createContext, useContext, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client"
+import { chat_service, useAppData } from "./AppContext";
 
 interface SocketContextType{
-   socket: Socket | null
+   socket: Socket | null;
+   onlineUsers: string[];
 }
 
-const socketContext = createContext<SocketContextType>({
-    socket: null
+const SocketContext = createContext<SocketContextType>({
+    socket: null,
+    onlineUsers: [],
 });
 
 interface ProviderProps {
   children: React.ReactNode;
 }
 
-export const socketProvider = ({ children }: ProviderProps) => {
-  
+export const SocketProvider = ({ children }: ProviderProps) => {
+   const [socket, setSocket] = useState<Socket | null>(null);
+   const [onlineUsers, setOnlineUsers] = useState<string[]>([])
+   const {user} = useAppData()
 
+   useEffect(() => {
+     if(!user?._id) return;
+     const newSocket = io(chat_service, {
+        query: {
+            userId: user._id
+        }
+     });
+
+     // Defer state update to avoid synchronous setState inside the effect
+     Promise.resolve().then(() => setSocket(newSocket));
+
+     newSocket.on("getOnlineUsers", (users) => {
+        setOnlineUsers(users)
+     })
+
+     return () => {
+        newSocket.disconnect();
+     }
+   }, [user?._id])
+   
 
    return (
-   <socketContext.Provider value={}>
+   <SocketContext.Provider value={{ socket, onlineUsers }}>
         {children}
-    </socketContext.Provider>
+    </SocketContext.Provider>
     )
 }
+
+
+export const SocketData = () => useContext(SocketContext);

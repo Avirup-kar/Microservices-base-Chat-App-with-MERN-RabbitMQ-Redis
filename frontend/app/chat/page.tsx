@@ -10,6 +10,7 @@ import axios from 'axios';
 import ChatHeader from '../components/ChatHeader';
 import ChatMessages from '../components/ChatMessages';
 import MessageInput from '../components/MessageInput';
+import { SocketData } from '../context/SocketContext';
 
 export interface Message{
   _id: string
@@ -29,6 +30,7 @@ export interface Message{
 
 const ChatPage = () => {
   const {isAuth, loading, logoutUser, chats, user: loggedInUser, users, fetchChats, setChats} = useAppData();
+  const { onlineUsers } = SocketData();
   const router = useRouter();
   const [selecteduser, setSelecteduser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -67,7 +69,7 @@ const ChatPage = () => {
  }
 
  //send message
- const handleMessageSend = async (e: any, imageFile: File | null) => {
+ const handleMessageSend = async (e: any, imageFile: File | null | undefined) => {
    e.preventDefault()
    if(!message.trim() && !imageFile) return;
    if(!selecteduser) return
@@ -153,13 +155,14 @@ const ChatPage = () => {
       users={users} 
       loggedInUser={loggedInUser} 
       chats={chats} 
+      onlineUsers={onlineUsers}
       selecteduser={selecteduser} 
       setSelecteduser={setSelecteduser} 
       handleLogout={handleLogout}
       creatChat={creatChat} />
 
       <div className="flex-1 relative flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border border-white/10">
-        <ChatHeader user={user} setSidebarOpen={setSiderbarOpen} isTyping={isTyping}/>
+        <ChatHeader user={user} onlineUsers={onlineUsers} setSidebarOpen={setSiderbarOpen} isTyping={isTyping}/>
         <ChatMessages selectedUser={selecteduser} messages={messages} loggedInUser={loggedInUser} />
         <MessageInput selecteduser={selecteduser} handleMessageSend={handleMessageSend} message={message} setMessage={habdleTypeing}/>
       </div>

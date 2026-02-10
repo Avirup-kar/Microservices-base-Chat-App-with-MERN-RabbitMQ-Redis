@@ -19,17 +19,22 @@ export const userSocketMap: Record<string, string> = {};
 
 //Socket.io conection handeler function
 io.on("connection", (socket: Socket) => {
-  const userId = socket.handshake.query.userId
-  console.log("User connected", socket.id)
-  if(userId) userSocketMap[userId] = socket.id;
+    console.log("User connected", socket.id)
+  const userId = socket.handshake.query.userId as string | undefined
+  if(userId && userId !== undefined){
+      if(userId) userSocketMap[userId] = socket.id;
+      console.log(`User ${userId} mapped to socket ${socket.id}`);
+  }
 
   //Emit all online users to all conected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
-    console.log("User disconnected", socket.id);
+    if(userId){
     delete userSocketMap[userId];
+    console.log("User disconnected", socket.id);
     io.emit("getOnlineUsers", Object.keys(userSocketMap))
+    }   
   })
 
   socket.on("connect_error", (error) => {
