@@ -30,7 +30,7 @@ export interface Message{
 
 const ChatPage = () => {
   const {isAuth, loading, logoutUser, chats, user: loggedInUser, users, fetchChats, setChats} = useAppData();
-  const { onlineUsers } = SocketData();
+  const { onlineUsers, socket } = SocketData();
   const router = useRouter();
   const [selecteduser, setSelecteduser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -75,6 +75,15 @@ const ChatPage = () => {
    if(!selecteduser) return
 
    //Socket work
+   if(typingTimeOut){
+    clearTimeout(typingTimeOut);
+    setTypingTimeOut(null);
+   }
+
+   socket?.emit("stopTyping", {
+    chatId: selecteduser,
+    userId: loggedInUser?._id
+   })
 
    const token = Cookies.get("token")
    try {
@@ -115,11 +124,46 @@ const ChatPage = () => {
 
  const habdleTypeing = (value: string) => {
     setMessage(value);
-    if(!selecteduser) return
+    if(!selecteduser || !socket) return
 
     //socket setup
+    if(value.trim()){
+      socket?.emit("typing", {
+        chatId: selecteduser,
+        userId: loggedInUser?._id
+      })
+    }
+
+    if(typingTimeOut){
+      clearTimeout(typingTimeOut);
+      setTypingTimeOut(null);
+    }
+
+   const timout = setTimeout(()=>{
+     socket.emit("stopTyping", {
+     chatId: selecteduser,
+     userId: loggedInUser?._id,
+    });
+   }, 2000);
+
+ setTypingTimeOut(timout)
  }
  
+ useEffect(()=>{
+   socket?.on("userTyping", (data) => {
+     console.log("recieved user typing", data);
+     if(data.chatId === selecteduser && data.userId !== loggedInUser?._id) {
+     setIsTyping(true)
+     }
+    });
+
+    socket?.on("userStoppedTyping", (data) => {
+     console.log("recieved user typing", data);
+     if(data.chatId === selecteduser && data.userId !== loggedInUser?._id) {
+     setIsTyping(true)
+     }
+    });
+ })
   
  useEffect(() => {
    if(selecteduser){

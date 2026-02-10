@@ -8,7 +8,7 @@ const io = new Server(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"],
-    }
+    },
 });
 //store online users
 export const userSocketMap = {};
@@ -30,8 +30,23 @@ io.on("connection", (socket) => {
         console.log(`User ${data.userId} is typing in chat ${data.chatId}`);
         socket.to(data.chatId).emit("userTyping", {
             chatId: data.chatId,
-            userId: data.userId
+            userId: data.userId,
         });
+    });
+    socket.on("stopTyping", (data) => {
+        console.log(`User ${data.userId} stopped typing in chat ${data.chatId}`);
+        socket.to(data.chatId).emit("userStoppedTyping", {
+            chatId: data.chatId,
+            userId: data.userId,
+        });
+    });
+    socket.on("joinChat", (chatId) => {
+        socket.join(chatId);
+        console.log(`User ${userId} joined chat room ${chatId}`);
+    });
+    socket.on("leaveChat", (chatId) => {
+        socket.leave(chatId);
+        console.log(`User ${userId} left chat room ${chatId}`);
     });
     socket.on("disconnect", () => {
         if (userId) {
