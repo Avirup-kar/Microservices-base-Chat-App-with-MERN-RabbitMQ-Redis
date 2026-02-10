@@ -29,8 +29,20 @@ io.on("connection", (socket: Socket) => {
   //Emit all online users to all conected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  if(userId){
+    socket.join(userId)
+  }
+
+  socket.on("typing", (data)=> {
+     console.log(`User ${data.userId} is typing in chat ${data.chatId}`);
+     socket.to(data.chatId).emit("userTyping", {
+     chatId: data.chatId,
+     userId: data.userId
+    })
+  })
+
   socket.on("disconnect", () => {
-    if(userId){
+    if(userId){ 
     delete userSocketMap[userId];
     console.log("User disconnected", socket.id);
     io.emit("getOnlineUsers", Object.keys(userSocketMap))
