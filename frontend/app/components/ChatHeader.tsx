@@ -46,7 +46,7 @@ const ChatHeader = ({ user, setSidebarOpen, isTyping, onlineUsers }: ChatHeaderP
                       <div className="flex items-center gap-2">
                         {
                           isTyping ? (<div className="flex items-center gap-2 text-sm">
-                            <div className="flex gap-1">
+                            <div className="flex justify-center items-center gap-1">
                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: "0.1s"}}></div>
                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: "0.2s"}}></div>

@@ -158,12 +158,17 @@ const ChatPage = () => {
     });
 
     socket?.on("userStoppedTyping", (data) => {
-     console.log("recieved user typing", data);
+     console.log("recieved user stopped typing", data);
      if(data.chatId === selecteduser && data.userId !== loggedInUser?._id) {
-     setIsTyping(true)
+     setIsTyping(false)
      }
     });
- })
+
+    return () => {
+     socket?.off("userTyping");
+     socket?.off("userStoppedTyping");
+   }
+ }, [socket, selecteduser, loggedInUser?._id])
   
  useEffect(() => {
    if(selecteduser){
@@ -185,8 +190,25 @@ const ChatPage = () => {
       }
     }
      fetchChatMessages();
+     setIsTyping(false);
+
+     socket?.emit("joinChat", selecteduser);
+
+     return () => {
+      socket?.emit("leaveChat", selecteduser);
+      setMessages(null);
+     }
    }
- }, [selecteduser])
+ }, [selecteduser, socket])
+
+ useEffect(() => {
+   return () => {
+      if(typingTimeOut){
+         clearTimeout(typingTimeOut);
+      }
+   }
+ }, [typingTimeOut])
+ 
  
   if(loading) return <Loading />
   return (

@@ -2,6 +2,7 @@ import axios from "axios";
 import TryCatch from "../config/TryCatch.js";
 import { Chat } from "../models/Chat.js";
 import { Messages } from "../models/Message.js";
+import { getRecieverSocketId, io } from "../config/socket.js";
 //To craet a chat
 export const createNewChat = TryCatch(async (req, res) => {
     const userId = req.user?._id;
@@ -119,11 +120,19 @@ export const sendMessage = TryCatch(async (req, res) => {
         return;
     }
     //Socket setup
+    const receiverSocketId = getRecieverSocketId(otherUserId.toString());
+    let isReceiverInChatRoom = false;
+    if (receiverSocketId) {
+        const receiverSocket = io.sockets.sockets.get(receiverSocketId);
+        if (receiverSocket && receiverSocket.rooms.has(chatId)) {
+            isReceiverInChatRoom = true;
+        }
+    }
     let messageData = {
         chatId,
         sender: senderId,
-        seen: false,
-        seenAt: undefined,
+        seen: isReceiverInChatRoom,
+        seenAt: isReceiverInChatRoom ? new Date() : undefined,
     };
     if (imageFile) {
         messageData.image = {

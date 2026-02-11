@@ -3,6 +3,7 @@ import TryCatch from "../config/TryCatch.js";
 import type { authencatedRequest } from "../middlewares/isAuth.js";
 import { Chat } from "../models/Chat.js";
 import { Messages } from "../models/Message.js";
+import { getRecieverSocketId, io } from "../config/socket.js";
 
 //To craet a chat
 export const createNewChat = TryCatch(async (req: authencatedRequest, res) => {
@@ -148,13 +149,21 @@ export const sendMessage = TryCatch(async (req: authencatedRequest, res) => {
   }
  
   //Socket setup
+  const receiverSocketId = getRecieverSocketId(otherUserId.toString());
+  let isReceiverInChatRoom = false;
 
+  if(receiverSocketId){
+    const receiverSocket = io.sockets.sockets.get(receiverSocketId);
+    if(receiverSocket && receiverSocket.rooms.has(chatId)){
+       isReceiverInChatRoom = true;
+    }
+  }
 
   let messageData: any = {
     chatId,
     sender: senderId,
-    seen: false,
-    seenAt: undefined,
+    seen: isReceiverInChatRoom,
+    seenAt: isReceiverInChatRoom ? new Date() : undefined,
   }
 
   if(imageFile){
