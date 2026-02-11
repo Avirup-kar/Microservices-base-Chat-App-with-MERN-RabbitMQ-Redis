@@ -150,7 +150,7 @@ const ChatPage = () => {
  }
  
  useEffect(()=>{
-   socket?.on("userTyping", (data) => {
+    socket?.on("userTyping", (data) => {
      console.log("recieved user typing", data);
      if(data.chatId === selecteduser && data.userId !== loggedInUser?._id) {
      setIsTyping(true)

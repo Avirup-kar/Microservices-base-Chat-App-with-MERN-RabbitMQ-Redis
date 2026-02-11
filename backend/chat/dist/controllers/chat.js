@@ -158,6 +158,21 @@ export const sendMessage = TryCatch(async (req, res) => {
         updatedAt: new Date(),
     }, { new: true });
     //emit to socket
+    io.to(chatId).emit("newMessage", savedMessage);
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", savedMessage);
+    }
+    const senderSocketId = getRecieverSocketId(senderId.toString());
+    if (senderSocketId) {
+        io.to(senderSocketId).emit("newMessage", savedMessage);
+    }
+    if (isReceiverInChatRoom && senderSocketId) {
+        io.to(senderSocketId).emit("messagesSeen", {
+            chatId: chatId,
+            seenBy: otherUserId,
+            messageIds: [savedMessage._id]
+        });
+    }
     res.status(201).json({
         message: savedMessage,
         send: senderId,
@@ -217,6 +232,16 @@ export const getMessageByChat = TryCatch(async (req, res) => {
             return;
         }
         //socket event for seen messages
+        if (messagesToMarkSeen.length > 0) {
+            const otherUserSocketId = getRecieverSocketId(otherUserId.toString());
+            if (otherUserSocketId) {
+                io.to(otherUserSocketId).emit("messagesSeen", {
+                    chatId: chatId,
+                    seenBy: otherUserId,
+                    messageIds: messagesToMarkSeen.map((msg) => msg._id)
+                });
+            }
+        }
         res.json({
             messages,
             user: data
