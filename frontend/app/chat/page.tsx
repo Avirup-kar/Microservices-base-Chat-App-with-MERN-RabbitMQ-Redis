@@ -49,6 +49,32 @@ const ChatPage = () => {
 
  const handleLogout = () => logoutUser();
 
+ const moveChatToTop = (chatId: string, newMessage: any, updatedUnseenCount=true) => {
+   setChats((prev) => {
+    if(!prev) return null;
+
+    const updatedChats = [...prev];
+    const chatIndex = updatedChats.findIndex((chat) => chat.chat._id === chatId);
+
+    if(chatIndex !== -1){
+      const [moveChat] = updatedChats.splice(chatIndex, 1);
+
+      const updatedChat = {
+        ...moveChat, 
+        chat: {
+          ...moveChat.chat, latestmessage: {
+            text: newMessage.text,
+            sender: newMessage.sender
+          },
+          updatedAt: new Date().toString(),
+          unseenCount: updatedUnseenCount && newMessage.sender !== loggedInUser?._id ? (moveChat.chat.unseenCount || 0) + 1 : moveChat.chat.unseenCount || 0,
+        },
+      };
+      updatedChats.unshift(updatedChat)
+    }
+    return updatedChats
+   })
+ }
 
  async function creatChat(u: User){
    const token = Cookies.get("token");
