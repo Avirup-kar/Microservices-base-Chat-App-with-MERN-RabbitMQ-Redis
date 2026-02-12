@@ -56,8 +56,8 @@ const ChatMessages = ({
                             <div className={`rounded-lg p-3 max-w-sm ${ isSentByMe ?" bg-blue-600 text-white" : "bg-gray-700 text-white" }`}>
                                 {
                                     e.messageType === "image" && e.image && (
-                                        <div className="relative group">
-                                            <img src={e.image.url} alt="shared image" className="max-w-full h-auto rounded-lg" />
+                                        <div className="relative group" onClick={()=>{window.open(e.image?.url)}}>
+                                            <img src={e.image?.url} alt="shared image" className="max-w-full h-auto rounded-lg" />
                                         </div>
                                     )
                                 }

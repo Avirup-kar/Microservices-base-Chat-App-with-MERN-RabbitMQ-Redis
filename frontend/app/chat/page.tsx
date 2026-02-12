@@ -11,6 +11,7 @@ import ChatHeader from '../components/ChatHeader';
 import ChatMessages from '../components/ChatMessages';
 import MessageInput from '../components/MessageInput';
 import { SocketData } from '../context/SocketContext';
+import { text } from 'stream/consumers';
 
 export interface Message{
   _id: string
@@ -160,6 +161,13 @@ const ChatPage = () => {
     setMessage("")
     const displayText = imageFile ? "📷image": message;
 
+    moveChatToTop(
+      selecteduser!, 
+        {
+         text: displayText,
+         sender: data.sender
+        }, 
+        false)
    } catch (error:  any) {
     toast.error(error.response.data.message);
     toast.error("Failed to send Message");
@@ -200,14 +208,16 @@ const ChatPage = () => {
     if(selecteduser === message.chatId){
       setMessages((prev) => {
         const currentMessages = prev || [];
-      const messageExists = currentMessages.some((msg) => msg._id === message._Id);
+      const messageExists = currentMessages.some((msg) => msg._id === message._id);
       if(!messageExists){
         return [...currentMessages, message];
       }
       return currentMessages;
       })
 
-      moveChatToTop(message.ChatId, message, false);
+      moveChatToTop(message.chatId, message, false);
+    }else{
+      moveChatToTop(message.chatId, message, true);
     }
    })
 
@@ -253,8 +263,8 @@ const ChatPage = () => {
     return () => {
       socket?.off("newMessage");
       socket?.off("messagesSeen");
-     socket?.off("userTyping");
-     socket?.off("userStoppedTyping");
+      socket?.off("userTyping");
+      socket?.off("userStoppedTyping");
    }
  }, [socket, selecteduser, setChats, loggedInUser?._id])
   
@@ -277,17 +287,18 @@ const ChatPage = () => {
        toast.error("Failed to fetch messages")
       }
     }
-     fetchChatMessages();
-     setIsTyping(false);
 
-     resetUnseenCount(selecteduser);
+    fetchChatMessages();
+    setIsTyping(false);
 
-     socket?.emit("joinChat", selecteduser);
+    resetUnseenCount(selecteduser);
 
-     return () => {
+    socket?.emit("joinChat", selecteduser);
+
+    return () => {
       socket?.emit("leaveChat", selecteduser);
       setMessages(null);
-     }
+    }
    }
  }, [selecteduser, socket])
 
