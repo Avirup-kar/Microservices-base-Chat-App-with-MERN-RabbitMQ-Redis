@@ -76,6 +76,25 @@ const ChatPage = () => {
    })
  }
 
+ const resetUnseenCount = (chatId: string)=>{
+   setChats ((prev)=>{
+    if(!prev) return null;
+    
+    return prev.map((chat)=>{
+    if(chat.chat._id === chatId){
+      return{
+        ...chat,
+        chat: {
+          ...chat.chat,
+          unseenCount: 0
+        }
+      }
+    }
+    return chat;
+    })
+   })
+ }
+
  async function creatChat(u: User){
    const token = Cookies.get("token");
    try {
@@ -176,6 +195,47 @@ const ChatPage = () => {
  }
  
  useEffect(()=>{
+   socket?.on("newMessage", (message) => {
+    console.log("Recieved new message:", message);
+    if(selecteduser === message.chatId){
+      setMessages((prev) => {
+        const currentMessages = prev || [];
+      const messageExists = currentMessages.some((msg) => msg._id === message._Id);
+      if(!messageExists){
+        return [...currentMessages, message];
+      }
+      return currentMessages;
+      })
+
+      moveChatToTop(message.ChatId, message, false);
+    }
+   })
+
+   socket?.on("messagesSeen", (data) => {
+    console.log("Message seen by:", data);
+    if(selecteduser === data.chatId){
+      setMessages((prev) => {
+        if(!prev) return null;
+        return prev.map((msg) => {
+           if(selecteduser === data.chatId && msg.sender === loggedInUser?._id && data.messageIds && data.messageIds.includes(msg._id)){
+            return{
+              ...msg, 
+              seen: true,
+              seenAt: new Date()
+            }
+           }else if(msg.sender === loggedInUser?._id && !data.messageIds){
+            return{
+              ...msg, 
+              seen: true,
+              seenAt: new Date()
+            }
+           }
+           return msg;
+        });
+      })
+    }
+   })
+
     socket?.on("userTyping", (data) => {
      console.log("recieved user typing", data);
      if(data.chatId === selecteduser && data.userId !== loggedInUser?._id) {
@@ -191,10 +251,12 @@ const ChatPage = () => {
     });
 
     return () => {
+      socket?.off("newMessage");
+      socket?.off("messagesSeen");
      socket?.off("userTyping");
      socket?.off("userStoppedTyping");
    }
- }, [socket, selecteduser, loggedInUser?._id])
+ }, [socket, selecteduser, setChats, loggedInUser?._id])
   
  useEffect(() => {
    if(selecteduser){
@@ -217,6 +279,8 @@ const ChatPage = () => {
     }
      fetchChatMessages();
      setIsTyping(false);
+
+     resetUnseenCount(selecteduser);
 
      socket?.emit("joinChat", selecteduser);
 
