@@ -162,17 +162,17 @@ export const sendMessage = TryCatch(async (req, res) => {
     if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", savedMessage);
     }
-    const senderSocketId = getRecieverSocketId(senderId.toString());
-    if (senderSocketId) {
-        io.to(senderSocketId).emit("newMessage", savedMessage);
-    }
-    if (isReceiverInChatRoom && senderSocketId) {
-        io.to(senderSocketId).emit("messagesSeen", {
-            chatId: chatId,
-            seenBy: otherUserId,
-            messageIds: [savedMessage._id]
-        });
-    }
+    // const senderSocketId = getRecieverSocketId(senderId.toString());
+    // if(senderSocketId){
+    //   io.to(senderSocketId).emit("newMessage", savedMessage);
+    // }
+    // if(isReceiverInChatRoom && senderSocketId) {
+    //   io.to(senderSocketId).emit("messagesSeen", {
+    //    chatId: chatId,
+    //    seenBy: otherUserId,
+    //    messageIds: [savedMessage._id]
+    //   })
+    // }
     res.status(201).json({
         message: savedMessage,
         send: senderId,

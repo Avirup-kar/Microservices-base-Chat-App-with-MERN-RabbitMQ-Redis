@@ -51,19 +51,19 @@ const ChatPage = () => {
  const handleLogout = () => logoutUser();
 
  const moveChatToTop = (chatId: string, newMessage: any, updatedUnseenCount=true) => {
+  
    setChats((prev) => {
     if(!prev) return null;
 
     const updatedChats = [...prev];
     const chatIndex = updatedChats.findIndex((chat) => chat.chat._id === chatId);
-
     if(chatIndex !== -1){
       const [moveChat] = updatedChats.splice(chatIndex, 1);
 
       const updatedChat = {
         ...moveChat, 
         chat: {
-          ...moveChat.chat, latestmessage: {
+          ...moveChat.chat, latestMessage: {
             text: newMessage.text,
             sender: newMessage.sender
           },
@@ -71,6 +71,7 @@ const ChatPage = () => {
           unseenCount: updatedUnseenCount && newMessage.sender !== loggedInUser?._id ? (moveChat.chat.unseenCount || 0) + 1 : moveChat.chat.unseenCount || 0,
         },
       };
+      console.log("updatedChat.....",updatedChat)
       updatedChats.unshift(updatedChat)
     }
     return updatedChats
@@ -165,7 +166,7 @@ const ChatPage = () => {
       selecteduser!, 
         {
          text: displayText,
-         sender: data.sender
+         sender: data.message.sender
         }, 
         false)
    } catch (error:  any) {
@@ -214,7 +215,7 @@ const ChatPage = () => {
       }
       return currentMessages;
       })
-
+      
       moveChatToTop(message.chatId, message, false);
     }else{
       moveChatToTop(message.chatId, message, true);
