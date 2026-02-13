@@ -52,9 +52,11 @@ const ChatPage = () => {
 
  const moveChatToTop = (chatId: string, newMessage: any, updatedUnseenCount=true) => {
   
+  console.log(newMessage)
+  if(chats?.some((c) => c.chat._id === chatId)){
    setChats((prev) => {
     if(!prev) return null;
-
+    
     const updatedChats = [...prev];
     const chatIndex = updatedChats.findIndex((chat) => chat.chat._id === chatId);
     if(chatIndex !== -1){
@@ -76,6 +78,9 @@ const ChatPage = () => {
     }
     return updatedChats
    })
+   }else{
+    
+   }
  }
 
  const resetUnseenCount = (chatId: string)=>{
